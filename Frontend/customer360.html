@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM 360 — Customer 360 View</title>
+    <meta name="description" content="CRM 360 Customer 360 — complete customer profile, history, and insights.">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="bg-effects"><div class="bg-orb"></div><div class="bg-orb"></div><div class="bg-orb"></div></div>
+
+<nav class="sidebar">
+    <div class="sidebar-logo"><div class="logo-icon">C</div><h4>CRM 360</h4></div>
+    <div class="sidebar-title">MAIN</div>
+    <a class="nav-link" href="dashboard.html" data-page="dashboard">📊 Dashboard</a>
+    <div class="sidebar-title">CUSTOMERS</div>
+    <a class="nav-link" href="customers.html" data-page="customers">👥 Customers</a>
+    <a class="nav-link" href="customer360.html" data-page="customer360">🎯 Customer 360</a>
+    <div class="sidebar-title">SALES</div>
+    <a class="nav-link" href="orders.html" data-page="orders">📦 Orders</a>
+    <div class="sidebar-title">SUPPORT</div>
+    <a class="nav-link" href="tickets.html" data-page="tickets">🎫 Support Tickets</a>
+    <a class="nav-link" href="feedback.html" data-page="feedback">⭐ Feedback</a>
+    <a class="nav-link" href="calls.html" data-page="calls">📞 Call Logs</a>
+    <a class="nav-link" href="interactions.html" data-page="interactions">🌐 Web Interactions</a>
+    <div class="sidebar-profile"><div class="avatar-sm">A</div><div class="profile-info">Admin User<span>admin@crm360.io</span></div></div>
+</nav>
+
+<main class="main-content">
+    <header class="topbar">
+        <div class="search-box"><input type="text" placeholder="Search customers, orders..."></div>
+        <div class="top-icons">
+            <div class="icon">🔔<span class="badge-dot"></span></div>
+            <div class="profile"><div class="avatar">A</div><span>Admin</span></div>
+        </div>
+    </header>
+
+    <div class="page-header">
+        <h2>Customer 360°</h2>
+        <p>Complete customer profile and engagement history</p>
+    </div>
+
+    <div class="profile-card" id="profile-card">
+        <div class="profile-avatar" id="profile-avatar">...</div>
+        <div class="profile-info">
+            <h3 id="profile-name">Loading...</h3>
+            <p id="profile-email"></p>
+            <p id="profile-phone"></p>
+            <p id="profile-location"></p>
+            <div class="profile-badges" id="profile-badges"></div>
+        </div>
+    </div>
+
+    <div class="kpi-grid">
+        <div class="kpi-card"><div class="kpi-header"><div class="kpi-label">Total Orders</div><div class="kpi-icon">📦</div></div><div class="kpi-value counter" data-target="0">0</div></div>
+        <div class="kpi-card"><div class="kpi-header"><div class="kpi-label">Lifetime Value</div><div class="kpi-icon">💰</div></div><div class="kpi-value counter" data-target="0" data-prefix="₹" data-use-indian>0</div></div>
+        <div class="kpi-card"><div class="kpi-header"><div class="kpi-label">Satisfaction</div><div class="kpi-icon">⭐</div></div><div class="kpi-value counter" data-target="0" data-suffix="/5" data-decimals="1">0</div></div>
+        <div class="kpi-card"><div class="kpi-header"><div class="kpi-label">Support Tickets</div><div class="kpi-icon">🎫</div></div><div class="kpi-value counter" data-target="0">0</div></div>
+    </div>
+
+    <div class="chart-grid cols-2">
+        <div class="card"><div class="card-body"><h5>Interaction Timeline</h5>
+            <div class="timeline" id="timeline" style="margin-top:16px;"><div class="timeline-item"><p style="color:var(--text-muted);">Loading...</p></div></div>
+        </div></div>
+        <div class="card"><div class="card-body"><h5>Recent Orders</h5>
+            <table style="margin-top:8px;"><thead><tr><th>Order ID</th><th>Amount</th><th>Status</th></tr></thead>
+            <tbody id="orders-table"><tr><td colspan="3" style="color:var(--text-muted);">Loading...</td></tr></tbody></table>
+        </div></div>
+    </div>
+</main>
+
+<script src="dashboard.js"></script>
+<script>
+const API = 'http://localhost:5000/api';
+const customerId = new URLSearchParams(window.location.search).get('id') || 101;
+
+fetch(API + '/customers/' + customerId).then(r => r.json()).then(c => {
+    document.getElementById('profile-avatar').textContent = c.name.split(' ').map(w => w[0]).join('');
+    document.getElementById('profile-name').textContent = c.name;
+    document.getElementById('profile-email').textContent = '📧 ' + c.email;
+    document.getElementById('profile-phone').textContent = '📱 ' + c.phone_no;
+    document.getElementById('profile-location').textContent = '📍 ' + c.city + ', ' + c.state;
+    const sc = c.segment_type === 'Premium' ? 'badge-premium' : c.segment_type === 'New' ? 'badge-new' : 'badge-regular';
+    document.getElementById('profile-badges').innerHTML = `<span class="badge ${sc}">${c.segment_type}</span>`;
+    const cards = document.querySelectorAll('.kpi-card');
+    cards[0].querySelector('.kpi-value').dataset.target = c.total_orders;
+    cards[1].querySelector('.kpi-value').dataset.target = c.lifetime_value;
+    cards[2].querySelector('.kpi-value').dataset.target = c.avg_rating;
+    cards[3].querySelector('.kpi-value').dataset.target = c.ticket_count;
+    window.animateCounters();
+});
+
+fetch(API + '/customers/' + customerId + '/timeline').then(r => r.json()).then(items => {
+    const tl = document.getElementById('timeline'); tl.innerHTML = '';
+    items.forEach((item, i) => {
+        const d = document.createElement('div'); d.className = 'timeline-item'; d.style.animationDelay = (i*0.1)+'s';
+        const dt = new Date(item.time).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+        d.innerHTML = `<h6>${item.icon} ${item.title}</h6><p>${item.detail} • ${dt}</p>`;
+        tl.appendChild(d);
+    });
+});
+
+fetch(API + '/customers/' + customerId + '/orders').then(r => r.json()).then(orders => {
+    const tb = document.getElementById('orders-table'); tb.innerHTML = '';
+    orders.forEach(o => {
+        const sc = o.order_status==='Delivered'?'badge-delivered':o.order_status==='Shipped'?'badge-shipped':o.order_status==='Processing'?'badge-processing':'badge-cancelled';
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td style="color:var(--text-primary);">ORD-${o.order_id}</td><td>₹${Number(o.total_amount).toLocaleString('en-IN')}</td><td><span class="badge ${sc}">${o.order_status}</span></td>`;
+        tb.appendChild(tr);
+    });
+});
+</script>
+</body>
+</html>

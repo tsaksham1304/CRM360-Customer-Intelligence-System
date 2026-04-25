@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM 360 — Feedback</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="bg-effects"><div class="bg-orb"></div><div class="bg-orb"></div><div class="bg-orb"></div></div>
+<nav class="sidebar">
+    <div class="sidebar-logo"><div class="logo-icon">C</div><h4>CRM 360</h4></div>
+    <div class="sidebar-title">MAIN</div><a class="nav-link" href="dashboard.html" data-page="dashboard">📊 Dashboard</a>
+    <div class="sidebar-title">CUSTOMERS</div><a class="nav-link" href="customers.html" data-page="customers">👥 Customers</a><a class="nav-link" href="customer360.html" data-page="customer360">🎯 Customer 360</a>
+    <div class="sidebar-title">SALES</div><a class="nav-link" href="orders.html" data-page="orders">📦 Orders</a>
+    <div class="sidebar-title">SUPPORT</div><a class="nav-link" href="tickets.html" data-page="tickets">🎫 Support Tickets</a><a class="nav-link" href="feedback.html" data-page="feedback">⭐ Feedback</a><a class="nav-link" href="calls.html" data-page="calls">📞 Call Logs</a><a class="nav-link" href="interactions.html" data-page="interactions">🌐 Web Interactions</a>
+    <div class="sidebar-profile"><div class="avatar-sm">A</div><div class="profile-info">Admin User<span>admin@crm360.io</span></div></div>
+</nav>
+<main class="main-content">
+    <header class="topbar"><div class="search-box"><input type="text" placeholder="Search feedback..."></div><div class="top-icons"><div class="icon">🔔<span class="badge-dot"></span></div><div class="profile"><div class="avatar">A</div><span>Admin</span></div></div></header>
+    <div class="page-header"><h2>Customer Feedback</h2><p>Reviews, ratings, and satisfaction insights</p></div>
+    <div class="kpi-grid">
+        <div class="kpi-card"><div class="kpi-header"><div class="kpi-label">Avg Rating</div><div class="kpi-icon">⭐</div></div><div class="kpi-value counter" data-target="0" data-suffix="/5" data-decimals="1">0</div></div>
+        <div class="kpi-card"><div class="kpi-header"><div class="kpi-label">Total Reviews</div><div class="kpi-icon">📝</div></div><div class="kpi-value counter" data-target="0">0</div></div>
+        <div class="kpi-card"><div class="kpi-header"><div class="kpi-label">Positive</div><div class="kpi-icon">😊</div></div><div class="kpi-value counter" data-target="0" data-suffix="%">0</div></div>
+        <div class="kpi-card"><div class="kpi-header"><div class="kpi-label">Negative</div><div class="kpi-icon">😟</div></div><div class="kpi-value counter" data-target="0" data-suffix="%">0</div></div>
+    </div>
+    <div class="feedback-grid" id="feedback-grid">
+        <div class="feedback-card"><div class="feedback-text" style="color:var(--text-muted);">Loading feedback...</div></div>
+    </div>
+</main>
+<script src="dashboard.js"></script>
+<script>
+const API = 'http://localhost:5000/api';
+fetch(API + '/feedback/stats').then(r=>r.json()).then(d => {
+    const cards = document.querySelectorAll('.kpi-card');
+    cards[0].querySelector('.kpi-value').dataset.target = d.avg_rating;
+    cards[1].querySelector('.kpi-value').dataset.target = d.total;
+    cards[2].querySelector('.kpi-value').dataset.target = d.positive_pct;
+    cards[3].querySelector('.kpi-value').dataset.target = d.negative_pct;
+    window.animateCounters();
+});
+fetch(API + '/feedback').then(r=>r.json()).then(items => {
+    const grid = document.getElementById('feedback-grid'); grid.innerHTML = '';
+    items.forEach((f, i) => {
+        const initials = f.customer_name.split(' ').map(w => w[0]).join('');
+        const stars = '★'.repeat(f.rating) + '☆'.repeat(5 - f.rating);
+        const dt = new Date(f.feedback_date).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+        const card = document.createElement('div');
+        card.className = 'feedback-card';
+        card.style.animationDelay = (i * 0.05) + 's';
+        card.innerHTML = `
+            <div style="display:flex;align-items:center;gap:12px;">
+                <div class="avatar" style="width:40px;height:40px;font-size:14px;">${initials}</div>
+                <div><strong style="font-size:14px;">${f.customer_name}</strong><br><span style="font-size:11px;color:var(--text-muted);">${f.segment_type} Customer</span></div>
+            </div>
+            <div class="stars">${stars}</div>
+            <div class="feedback-text">${f.comments}</div>
+            <div class="feedback-meta"><span>${f.segment_type}</span><span>${dt}</span></div>
+        `;
+        grid.appendChild(card);
+    });
+});
+</script>
+</body>
+</html>

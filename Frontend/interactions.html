@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM 360 — Web Interactions</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="bg-effects"><div class="bg-orb"></div><div class="bg-orb"></div><div class="bg-orb"></div></div>
+<nav class="sidebar">
+    <div class="sidebar-logo"><div class="logo-icon">C</div><h4>CRM 360</h4></div>
+    <div class="sidebar-title">MAIN</div><a class="nav-link" href="dashboard.html" data-page="dashboard">📊 Dashboard</a>
+    <div class="sidebar-title">CUSTOMERS</div><a class="nav-link" href="customers.html" data-page="customers">👥 Customers</a><a class="nav-link" href="customer360.html" data-page="customer360">🎯 Customer 360</a>
+    <div class="sidebar-title">SALES</div><a class="nav-link" href="orders.html" data-page="orders">📦 Orders</a>
+    <div class="sidebar-title">SUPPORT</div><a class="nav-link" href="tickets.html" data-page="tickets">🎫 Support Tickets</a><a class="nav-link" href="feedback.html" data-page="feedback">⭐ Feedback</a><a class="nav-link" href="calls.html" data-page="calls">📞 Call Logs</a><a class="nav-link" href="interactions.html" data-page="interactions">🌐 Web Interactions</a>
+    <div class="sidebar-profile"><div class="avatar-sm">A</div><div class="profile-info">Admin User<span>admin@crm360.io</span></div></div>
+</nav>
+<main class="main-content">
+    <header class="topbar"><div class="search-box"><input type="text" placeholder="Search interactions..."></div><div class="top-icons"><div class="icon">🔔<span class="badge-dot"></span></div><div class="profile"><div class="avatar">A</div><span>Admin</span></div></div></header>
+    <div class="page-header"><h2>Web Interactions</h2><p>Track customer web engagement and behavior</p></div>
+    <div class="kpi-grid">
+        <div class="kpi-card"><div class="kpi-header"><div class="kpi-label">Total Interactions</div><div class="kpi-icon">🌐</div></div><div class="kpi-value counter" data-target="0">0</div></div>
+        <div class="kpi-card"><div class="kpi-header"><div class="kpi-label">Unique Visitors</div><div class="kpi-icon">👤</div></div><div class="kpi-value counter" data-target="0">0</div></div>
+        <div class="kpi-card"><div class="kpi-header"><div class="kpi-label">Page Views</div><div class="kpi-icon">👁️</div></div><div class="kpi-value counter" data-target="0">0</div></div>
+        <div class="kpi-card"><div class="kpi-header"><div class="kpi-label">Form Submits</div><div class="kpi-icon">📝</div></div><div class="kpi-value counter" data-target="0">0</div></div>
+    </div>
+    <div class="table-container">
+        <div class="table-header"><h5>Recent Web Interactions</h5><div class="table-count" id="int-count">Loading...</div></div>
+        <table><thead><tr><th>Customer</th><th>Type</th><th>Page Visited</th><th>Date</th><th>IP Address</th></tr></thead>
+        <tbody id="int-table"><tr><td colspan="5" style="color:var(--text-muted);text-align:center;">Loading...</td></tr></tbody></table>
+    </div>
+</main>
+<script src="dashboard.js"></script>
+<script>
+const API = 'http://localhost:5000/api';
+fetch(API + '/interactions/stats').then(r=>r.json()).then(d => {
+    const cards = document.querySelectorAll('.kpi-card');
+    cards[0].querySelector('.kpi-value').dataset.target = d.total;
+    cards[1].querySelector('.kpi-value').dataset.target = d.unique_visitors;
+    cards[2].querySelector('.kpi-value').dataset.target = d.page_views;
+    cards[3].querySelector('.kpi-value').dataset.target = d.form_submits;
+    document.getElementById('int-count').textContent = d.total + ' interactions';
+    window.animateCounters();
+});
+fetch(API + '/interactions').then(r=>r.json()).then(items => {
+    const tb = document.getElementById('int-table'); tb.innerHTML = '';
+    items.forEach(i => {
+        const sc = i.interaction_type==='Click'?'badge-click':i.interaction_type==='Page View'?'badge-view':i.interaction_type==='Form Submit'?'badge-signup':'badge-view';
+        const dt = new Date(i.interaction_time).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td style="color:var(--text-primary);font-weight:500;">${i.customer_name}</td><td><span class="badge ${sc}">${i.interaction_type}</span></td><td>${i.page_visited}</td><td>${dt}</td><td>${i.ip_address}</td>`;
+        tb.appendChild(tr);
+    });
+});
+</script>
+</body>
+</html>

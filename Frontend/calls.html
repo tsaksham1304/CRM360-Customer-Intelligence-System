@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM 360 — Call Logs</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="bg-effects"><div class="bg-orb"></div><div class="bg-orb"></div><div class="bg-orb"></div></div>
+<nav class="sidebar">
+    <div class="sidebar-logo"><div class="logo-icon">C</div><h4>CRM 360</h4></div>
+    <div class="sidebar-title">MAIN</div><a class="nav-link" href="dashboard.html" data-page="dashboard">📊 Dashboard</a>
+    <div class="sidebar-title">CUSTOMERS</div><a class="nav-link" href="customers.html" data-page="customers">👥 Customers</a><a class="nav-link" href="customer360.html" data-page="customer360">🎯 Customer 360</a>
+    <div class="sidebar-title">SALES</div><a class="nav-link" href="orders.html" data-page="orders">📦 Orders</a>
+    <div class="sidebar-title">SUPPORT</div><a class="nav-link" href="tickets.html" data-page="tickets">🎫 Support Tickets</a><a class="nav-link" href="feedback.html" data-page="feedback">⭐ Feedback</a><a class="nav-link" href="calls.html" data-page="calls">📞 Call Logs</a><a class="nav-link" href="interactions.html" data-page="interactions">🌐 Web Interactions</a>
+    <div class="sidebar-profile"><div class="avatar-sm">A</div><div class="profile-info">Admin User<span>admin@crm360.io</span></div></div>
+</nav>
+<main class="main-content">
+    <header class="topbar"><div class="search-box"><input type="text" placeholder="Search call logs..."></div><div class="top-icons"><div class="icon">🔔<span class="badge-dot"></span></div><div class="profile"><div class="avatar">A</div><span>Admin</span></div></div></header>
+    <div class="page-header"><h2>Call Logs</h2><p>Track all customer call interactions</p></div>
+    <div class="kpi-grid">
+        <div class="kpi-card"><div class="kpi-header"><div class="kpi-label">Total Calls</div><div class="kpi-icon">📞</div></div><div class="kpi-value counter" data-target="0">0</div></div>
+        <div class="kpi-card"><div class="kpi-header"><div class="kpi-label">Avg Duration</div><div class="kpi-icon">⏱️</div></div><div class="kpi-value counter" data-target="0" data-suffix=" min" data-decimals="1">0</div></div>
+        <div class="kpi-card"><div class="kpi-header"><div class="kpi-label">Placeholder</div><div class="kpi-icon">📥</div></div><div class="kpi-value">—</div></div>
+        <div class="kpi-card"><div class="kpi-header"><div class="kpi-label">Placeholder</div><div class="kpi-icon">📤</div></div><div class="kpi-value">—</div></div>
+    </div>
+    <div class="table-container">
+        <div class="table-header"><h5>Call History</h5><div class="table-count" id="call-count">Loading...</div></div>
+        <table><thead><tr><th>Call ID</th><th>Customer</th><th>Purpose</th><th>Duration</th><th>Agent</th><th>Date</th></tr></thead>
+        <tbody id="calls-table"><tr><td colspan="6" style="color:var(--text-muted);text-align:center;">Loading...</td></tr></tbody></table>
+    </div>
+</main>
+<script src="dashboard.js"></script>
+<script>
+const API = 'http://localhost:5000/api';
+fetch(API + '/calls/stats').then(r=>r.json()).then(d => {
+    const cards = document.querySelectorAll('.kpi-card');
+    cards[0].querySelector('.kpi-value').dataset.target = d.total;
+    cards[1].querySelector('.kpi-value').dataset.target = d.avg_duration_min;
+    document.getElementById('call-count').textContent = d.total + ' calls';
+    window.animateCounters();
+});
+fetch(API + '/calls').then(r=>r.json()).then(calls => {
+    const tb = document.getElementById('calls-table'); tb.innerHTML = '';
+    calls.forEach(c => {
+        const dt = new Date(c.call_date).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td style="color:var(--text-primary);font-weight:500;">CALL-${c.call_id}</td><td>${c.customer_name}</td><td>${c.call_purpose}</td><td>${c.call_duration} min</td><td>${c.agent_name}</td><td>${dt}</td>`;
+        tb.appendChild(tr);
+    });
+});
+</script>
+</body>
+</html>

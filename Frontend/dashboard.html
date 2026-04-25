@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM 360 — Dashboard</title>
+    <meta name="description" content="CRM 360 Analytics Dashboard — Real-time customer intelligence and engagement insights.">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- BACKGROUND EFFECTS -->
+<div class="bg-effects">
+    <div class="bg-orb"></div>
+    <div class="bg-orb"></div>
+    <div class="bg-orb"></div>
+</div>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+    <div class="sidebar-logo">
+        <div class="logo-icon">C</div>
+        <h4>CRM 360</h4>
+    </div>
+
+    <div class="sidebar-title">MAIN</div>
+    <a class="nav-link active" href="dashboard.html" data-page="dashboard">📊 Dashboard</a>
+
+    <div class="sidebar-title">CUSTOMERS</div>
+    <a class="nav-link" href="customers.html" data-page="customers">👥 Customers</a>
+    <a class="nav-link" href="customer360.html" data-page="customer360">🎯 Customer 360</a>
+
+    <div class="sidebar-title">SALES</div>
+    <a class="nav-link" href="orders.html" data-page="orders">📦 Orders</a>
+
+    <div class="sidebar-title">SUPPORT</div>
+    <a class="nav-link" href="tickets.html" data-page="tickets">🎫 Support Tickets</a>
+    <a class="nav-link" href="feedback.html" data-page="feedback">⭐ Feedback</a>
+    <a class="nav-link" href="calls.html" data-page="calls">📞 Call Logs</a>
+    <a class="nav-link" href="interactions.html" data-page="interactions">🌐 Web Interactions</a>
+
+    <div class="sidebar-profile">
+        <div class="avatar-sm">A</div>
+        <div class="profile-info">
+            Admin User
+            <span>admin@crm360.io</span>
+        </div>
+    </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main class="main-content">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+        <div class="search-box">
+            <input type="text" id="global-search" placeholder="Search customers, orders...">
+        </div>
+        <div class="top-icons">
+            <div class="icon" id="notifications-btn">🔔<span class="badge-dot"></span></div>
+            <div class="profile">
+                <div class="avatar">A</div>
+                <span>Admin</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+        <h2>Analytics Dashboard</h2>
+        <p>Real-time customer intelligence &amp; engagement insights</p>
+    </div>
+
+    <!-- KPI CARDS -->
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-header">
+                <div class="kpi-label">Total Customers</div>
+                <div class="kpi-icon">👥</div>
+            </div>
+            <div class="kpi-value counter" data-target="1248">0</div>
+            <div class="kpi-trend up">↑ 12.5% vs last month</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-header">
+                <div class="kpi-label">Total Orders</div>
+                <div class="kpi-icon">📦</div>
+            </div>
+            <div class="kpi-value counter" data-target="3864">0</div>
+            <div class="kpi-trend up">↑ 8.2% vs last month</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-header">
+                <div class="kpi-label">Total Revenue</div>
+                <div class="kpi-icon">💰</div>
+            </div>
+            <div class="kpi-value counter" data-target="2450000" data-prefix="₹" data-use-indian>0</div>
+            <div class="kpi-trend up">↑ 18.3% vs last month</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-header">
+                <div class="kpi-label">Open Tickets</div>
+                <div class="kpi-icon">🎫</div>
+            </div>
+            <div class="kpi-value counter" data-target="23">0</div>
+            <div class="kpi-trend down">↓ 5.1% vs last month</div>
+        </div>
+    </div>
+
+    <!-- CHARTS -->
+    <div class="chart-grid cols-2">
+        <div class="card">
+            <div class="card-body">
+                <h5>Revenue Overview</h5>
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <h5>Customer Segments</h5>
+                <canvas id="segmentChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- RECENT ACTIVITY -->
+    <div class="card" style="animation-delay: 0.3s;">
+        <div class="card-body">
+            <h5>Recent Activity</h5>
+            <div class="activity-feed" id="activity-feed">
+                <div class="activity-item">
+                    <div class="activity-text" style="color: var(--text-muted);">Loading recent activity...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="dashboard.js"></script>
+</body>
+</html>
