@@ -1,0 +1,3 @@
+# Tell GitHub to ignore HTML and CSS files when calculating the repository language statistics
+*.html linguist-vendored
+*.css linguist-vendored
